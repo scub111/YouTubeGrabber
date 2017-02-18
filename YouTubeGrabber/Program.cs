@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RapidInterface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace YouTubeGrabber
         [STAThread]
         static void Main()
         {
+            DBConnection.InitSkin("Office 2007 Black");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());

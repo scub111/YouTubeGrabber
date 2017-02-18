@@ -1,4 +1,6 @@
-﻿namespace YouTubeGrabber
+﻿using RapidInterface;
+
+namespace YouTubeGrabber
 {
     partial class MainForm
     {
@@ -35,11 +37,12 @@
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.btnDownload = new DevExpress.XtraEditors.SimpleButton();
             this.teDownloadPath = new DevExpress.XtraEditors.TextEdit();
-            this.gridBase = new DevExpress.XtraGrid.GridControl();
+            this.gridBase = new RapidInterface.GridControlEx(this.components);
             this.viewBase = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.columnIndex = new DevExpress.XtraGrid.Columns.GridColumn();
             this.columnTitle = new DevExpress.XtraGrid.Columns.GridColumn();
             this.columnReference = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.columnPriority = new DevExpress.XtraGrid.Columns.GridColumn();
             this.columnProgressPercentage = new DevExpress.XtraGrid.Columns.GridColumn();
             this.repProgressPercentage = new DevExpress.XtraEditors.Repository.RepositoryItemProgressBar();
             this.memoEdit1 = new DevExpress.XtraEditors.MemoEdit();
@@ -140,8 +143,10 @@
             this.gridBase.Name = "gridBase";
             this.gridBase.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repProgressPercentage});
+            this.gridBase.ShowOnlyPredefinedDetails = true;
             this.gridBase.Size = new System.Drawing.Size(686, 422);
             this.gridBase.TabIndex = 7;
+            this.gridBase.UseEmbeddedNavigator = true;
             this.gridBase.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.viewBase});
             // 
@@ -151,12 +156,15 @@
             this.columnIndex,
             this.columnTitle,
             this.columnReference,
+            this.columnPriority,
             this.columnProgressPercentage});
             this.viewBase.GridControl = this.gridBase;
             this.viewBase.Name = "viewBase";
             this.viewBase.OptionsFind.AlwaysVisible = true;
+            this.viewBase.OptionsSelection.MultiSelect = true;
             this.viewBase.OptionsView.ShowAutoFilterRow = true;
             this.viewBase.OptionsView.ShowGroupPanel = false;
+            this.viewBase.PopupMenuShowing += new DevExpress.XtraGrid.Views.Grid.PopupMenuShowingEventHandler(this.viewBase_PopupMenuShowing);
             // 
             // columnIndex
             // 
@@ -185,17 +193,30 @@
             this.columnReference.VisibleIndex = 2;
             this.columnReference.Width = 150;
             // 
+            // columnPriority
+            // 
+            this.columnPriority.Caption = "Priority";
+            this.columnPriority.FieldName = "Priority";
+            this.columnPriority.Name = "columnPriority";
+            this.columnPriority.Visible = true;
+            this.columnPriority.VisibleIndex = 3;
+            this.columnPriority.Width = 40;
+            // 
             // columnProgressPercentage
             // 
-            this.columnProgressPercentage.Caption = "ProgressPercentage";
+            this.columnProgressPercentage.Caption = "Progress";
+            this.columnProgressPercentage.ColumnEdit = this.repProgressPercentage;
             this.columnProgressPercentage.FieldName = "ProgressPercentage";
             this.columnProgressPercentage.Name = "columnProgressPercentage";
             this.columnProgressPercentage.Visible = true;
-            this.columnProgressPercentage.VisibleIndex = 3;
+            this.columnProgressPercentage.VisibleIndex = 4;
             // 
             // repProgressPercentage
             // 
+            this.repProgressPercentage.DisplayFormat.FormatString = "{0)";
+            this.repProgressPercentage.EndColor = System.Drawing.Color.Green;
             this.repProgressPercentage.Name = "repProgressPercentage";
+            this.repProgressPercentage.StartColor = System.Drawing.Color.Green;
             // 
             // memoEdit1
             // 
@@ -375,7 +396,7 @@
         private DevExpress.XtraLayout.LayoutControlGroup layoutControlGroup1;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem1;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem2;
-        private DevExpress.XtraGrid.GridControl gridBase;
+        private GridControlEx gridBase;
         private DevExpress.XtraGrid.Views.Grid.GridView viewBase;
         private DevExpress.XtraLayout.TabbedControlGroup tabbedControlGroup1;
         private DevExpress.XtraLayout.LayoutControlGroup layoutControlGroup3;
@@ -392,6 +413,7 @@
         private DevExpress.XtraGrid.Columns.GridColumn columnProgressPercentage;
         private DevExpress.XtraEditors.Repository.RepositoryItemProgressBar repProgressPercentage;
         private System.Windows.Forms.Timer tmrInterfaceUpdate;
+        private DevExpress.XtraGrid.Columns.GridColumn columnPriority;
     }
 }
 
