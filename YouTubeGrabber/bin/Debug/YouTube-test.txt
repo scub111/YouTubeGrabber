@@ -338,22 +338,21 @@ __count__/__total__
 
   </li>
 
-                <li class="yt-uix-scroller-scroll-unit " data-video-id="TuxuHHacIWU" data-innertube-clicktracking="CJwBEMggGAEiEwjygNeanZnSAhUIvhgKHSh2BFco-B0yA0JGYUi_hsKNqIe8_XI" data-thumbnail-url="https://i.ytimg.com/vi/TuxuHHacIWU/hqdefault.jpg?custom=true&amp;w=168&amp;h=94&amp;stc=true&amp;jpg444=true&amp;jpgq=90&amp;sp=68&amp;sigh=9vBOITf7HeIvMBR2ca5UOgvhmzk" data-video-username="kudvenkat" data-video-title="Creating altering and dropping a database - Part 2" data-index="1">
-    <span class="index">
+<li class="yt-uix-scroller-scroll-unit " data-video-id="TuxuHHacIWU" data-innertube-clicktracking="CJwBEMggGAEiEwjygNeanZnSAhUIvhgKHSh2BFco-B0yA0JGYUi_hsKNqIe8_XI" data-thumbnail-url="https://i.ytimg.com/vi/TuxuHHacIWU/hqdefault.jpg?custom=true&amp;w=168&amp;h=94&amp;stc=true&amp;jpg444=true&amp;jpgq=90&amp;sp=68&amp;sigh=9vBOITf7HeIvMBR2ca5UOgvhmzk" data-video-username="kudvenkat" data-video-title="Creating altering and dropping a database - Part 2" data-index="1">
+   <span class="index">
         2
-    </span>
-      <a href="/watch?v=TuxuHHacIWU&amp;list=PL08903FB7ACA1C2FB&amp;index=2" class=" spf-link  playlist-video clearfix  yt-uix-sessionlink      spf-link " data-sessionlink="itct=CJwBEMggGAEiEwjygNeanZnSAhUIvhgKHSh2BFco-B0yA0JGYUi_hsKNqIe8_XI" >
-      <span class="video-thumb  yt-thumb yt-thumb-72"
-    >
+   </span>
+   <a href="/watch?v=TuxuHHacIWU&amp;list=PL08903FB7ACA1C2FB&amp;index=2" class=" spf-link  playlist-video clearfix  yt-uix-sessionlink      spf-link " data-sessionlink="itct=CJwBEMggGAEiEwjygNeanZnSAhUIvhgKHSh2BFco-B0yA0JGYUi_hsKNqIe8_XI" >
+   <span class="video-thumb  yt-thumb yt-thumb-72">
     <span class="yt-thumb-default">
       <span class="yt-thumb-clip">
         
-  <img aria-hidden="true" data-ytimg="1" data-thumb="https://i.ytimg.com/vi/TuxuHHacIWU/hqdefault.jpg?custom=true&amp;w=168&amp;h=94&amp;stc=true&amp;jpg444=true&amp;jpgq=90&amp;sp=68&amp;sigh=9vBOITf7HeIvMBR2ca5UOgvhmzk" width="72" alt="" onload=";__ytRIL(this)" src="/yts/img/pixel-vfl3z5WfW.gif" >
+		<img aria-hidden="true" data-ytimg="1" data-thumb="https://i.ytimg.com/vi/TuxuHHacIWU/hqdefault.jpg?custom=true&amp;w=168&amp;h=94&amp;stc=true&amp;jpg444=true&amp;jpgq=90&amp;sp=68&amp;sigh=9vBOITf7HeIvMBR2ca5UOgvhmzk" width="72" alt="" onload=";__ytRIL(this)" src="/yts/img/pixel-vfl3z5WfW.gif" >
 
         <span class="vertical-align"></span>
       </span>
     </span>
-  </span>
+   </span>
 
     <div class="playlist-video-description">
       <h4 class="yt-ui-ellipsis yt-ui-ellipsis-2">
@@ -364,8 +363,7 @@ __count__/__total__
         </span>
     </div>
   </a>
-
-  </li>
+</li>
 
                 <li class="yt-uix-scroller-scroll-unit " data-video-id="JLeaM8pK8dE" data-innertube-clicktracking="CJsBEMggGAIiEwjygNeanZnSAhUIvhgKHSh2BFco-B0yA0JGYUi_hsKNqIe8_XI" data-thumbnail-url="https://i.ytimg.com/vi/JLeaM8pK8dE/hqdefault.jpg?custom=true&amp;w=168&amp;h=94&amp;stc=true&amp;jpg444=true&amp;jpgq=90&amp;sp=68&amp;sigh=GG1dWQOX0iViHl8YVE4XhpgikBQ" data-video-username="kudvenkat" data-video-title="Creating and working with tables - Part 3" data-index="2">
     <span class="index">
