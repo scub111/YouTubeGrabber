@@ -1,1 +1,12 @@
 D:\_Projects\YouTubeGrabber\YouTubeGrabber\bin\Debug\YouTubeGrabber.exe.config
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\bin\Debug\YouTubeGrabber.exe
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\bin\Debug\YouTubeGrabber.pdb
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.csprojResolveAssemblyReference.cache
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.MainForm.resources
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.Properties.Resources.resources
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.csproj.GenerateResource.Cache
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.exe
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.pdb
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.exe.licenses
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\bin\Debug\AngleSharp.dll
+D:\_Projects\YouTubeGrabber\YouTubeGrabber\bin\Debug\AngleSharp.pdb
