@@ -31,6 +31,7 @@ namespace YouTubeGrabber
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.sprbProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.slblCaption = new System.Windows.Forms.ToolStripStatusLabel();
@@ -94,7 +95,8 @@ namespace YouTubeGrabber
             // sprbProgress
             // 
             this.sprbProgress.Name = "sprbProgress";
-            this.sprbProgress.Size = new System.Drawing.Size(100, 16);
+            this.sprbProgress.Size = new System.Drawing.Size(400, 16);
+            this.sprbProgress.Step = 1;
             // 
             // slblCaption
             // 
@@ -182,7 +184,7 @@ namespace YouTubeGrabber
             this.columnTitle.Name = "columnTitle";
             this.columnTitle.Visible = true;
             this.columnTitle.VisibleIndex = 1;
-            this.columnTitle.Width = 100;
+            this.columnTitle.Width = 150;
             // 
             // columnReference
             // 
@@ -191,7 +193,7 @@ namespace YouTubeGrabber
             this.columnReference.Name = "columnReference";
             this.columnReference.Visible = true;
             this.columnReference.VisibleIndex = 2;
-            this.columnReference.Width = 150;
+            this.columnReference.Width = 100;
             // 
             // columnPriority
             // 
@@ -356,6 +358,7 @@ namespace YouTubeGrabber
             this.ClientSize = new System.Drawing.Size(734, 566);
             this.Controls.Add(this.layoutControl1);
             this.Controls.Add(this.statusStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "YouTube Grabber";
