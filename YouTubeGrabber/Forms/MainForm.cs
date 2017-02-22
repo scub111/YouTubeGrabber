@@ -3,18 +3,13 @@ using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
 using DevExpress.Utils.Menu;
 using DevExpress.XtraEditors;
-using DevExpress.XtraGrid.Columns;
 using DevExpress.XtraGrid.Menu;
-using DevExpress.XtraGrid.Views.Base;
-using DevExpress.XtraGrid.Views.Base.ViewInfo;
 using DevExpress.XtraGrid.Views.Grid;
-using DevExpress.XtraGrid.Views.Grid.ViewInfo;
 using DevExpress.XtraSplashScreen;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -27,81 +22,17 @@ namespace YouTubeGrabber
 {
     public partial class MainForm : XtraForm
     {
-        /// <summary>
-        /// Приоритет загрузки.
-        /// </summary>
-        public enum Priority
-        {
-
-            High,   //Высокий.
-            Normal, //Нормальный.
-            Low,    //Низкий.
-            None    //Не загружать.
-        }
-
-        /// <summary>
-        /// Класс записей на канале.
-        /// </summary>
-        public class YouTubeRecord
-        {
-            public YouTubeRecord()
-            {
-                Priority = Priority.Normal;
-            }
-
-            /// <summary>
-            /// Индекс.
-            /// </summary>
-            public int Index { get; set; }
-
-            /// <summary>
-            /// Заголовок.
-            /// </summary>
-            public string Title { get; set; }
-
-            /// <summary>
-            /// Ссылка.
-            /// </summary>
-            public string Reference { get; set; }
-
-            /// <summary>
-            /// Приоритет.
-            /// </summary>
-            public Priority Priority { get; set; }
-
-            /// <summary>
-            /// Процент загрузки.
-            /// </summary>
-            public double ProgressPercentage { get; set; }
-        }
-
-        public class Records : Collection<YouTubeRecord>
-        {
-
-        }
-
-
-        public class VideoDownloaderEx : VideoDownloader
-        {
-            public VideoDownloaderEx(VideoInfo video, string savePath, object tag = null) : base(video, savePath)
-            {
-                Tag = tag;
-            }
-            
-            public object Tag { get; private set; }
-        }
-
         public MainForm()
         {
+            Global.Default.Init();
             InitializeComponent();
             workerAnalyse = new BackgroundWorker();
             workerAnalyse.WorkerReportsProgress = true;
             workerAnalyse.DoWork += WorkerAnalyse_DoWork;
             workerAnalyse.ProgressChanged += WorkerAnalyse_ProgressChanged;
             html = "No data";
-            records = new Records();
-            threadPool = new FixedThreadPool(4);
-            threadPool.Finished += ThreadPool_Finished;
+            records = new Collection<YouTubeRecord>();
+            events = new Collection<EventLog>();
             Downloading = false;
         }
 
@@ -123,7 +54,12 @@ namespace YouTubeGrabber
         /// <summary>
         /// Список записей.
         /// </summary>
-        private Records records;
+        private Collection<YouTubeRecord> records;
+
+        /// <summary>
+        /// Список событий.
+        /// </summary>
+        private Collection<EventLog> events;
 
         /// <summary>
         /// Пул поток для загрузки записей.
@@ -137,8 +73,14 @@ namespace YouTubeGrabber
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            Text += string.Format(" {0}", Global.Default.Version);
+            teAnalyseUri.Text = Global.Default.varXml.AnalyseUri;
+            teDownloadPath.Text = Global.Default.varXml.DownloadPath;
+            seThreadCount.Value = Global.Default.varXml.ThreadCount;
             SplashScreenManager.CloseForm(false);
             gridBase.DataSource = records;
+            gridEventLog.DataSource = events;
+            PublishEvent("Program was started normaly.");
         }
 
         /// <summary>
@@ -155,7 +97,7 @@ namespace YouTubeGrabber
 
         static void DeleteFile(string file)
         {
-            if (System.IO.File.Exists(file)) System.IO.File.Delete(file);
+            if (File.Exists(file)) File.Delete(file);
         }
 
         /// <summary>
@@ -164,7 +106,13 @@ namespace YouTubeGrabber
         static void RenameFile(string oldFile, string newFile)
         {
             DeleteFile(newFile);
-            System.IO.File.Move(oldFile, newFile);
+            File.Move(oldFile, newFile);
+        }
+
+        private void PublishEvent(string eventLog)
+        {
+            events.Add(new EventLog(eventLog));
+            gridEventLog.RefreshDataSource();
         }
 
         /// <summary>
@@ -177,6 +125,11 @@ namespace YouTubeGrabber
             string tempFile = "";
             try
             {
+                this.BeginInvoke(new Action(() =>
+                {
+                    PublishEvent(string.Format("[{0}] - try to download...", name));
+                }));
+
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
 
@@ -185,7 +138,7 @@ namespace YouTubeGrabber
 
                 string finalFile = Path.Combine(path, RemoveIllegalPathCharacters(name) + video.VideoExtension);
 
-                if (!System.IO.File.Exists(finalFile))
+                if (!File.Exists(finalFile))
                 {
                     tempFile = Path.Combine(path, RemoveIllegalPathCharacters(name) + ".tmp");
                     VideoDownloaderEx videoDownloader = new VideoDownloaderEx(video, tempFile, record);
@@ -194,9 +147,19 @@ namespace YouTubeGrabber
                     RenameFile(tempFile, finalFile);
                 }
                 record.ProgressPercentage = 100;
+
+                this.BeginInvoke(new Action(() =>
+                {
+                    PublishEvent(string.Format("[{0}] - was downloaded successfully", name));
+                }));
             }
-            catch
+            catch(Exception ex)
             {
+                this.BeginInvoke(new Action(() =>
+                {
+                    PublishEvent(string.Format("{0} - {1}", ex.Source, ex.Message));
+                }));
+
                 if (!string.IsNullOrEmpty(tempFile))
                     DeleteFile(tempFile);
             }
@@ -215,7 +178,7 @@ namespace YouTubeGrabber
             try
             {
                 records.Clear();
-                Uri uri = new Uri(tdInputUri.Text);
+                Uri uri = new Uri(teAnalyseUri.Text);
                 html = new WebClient().DownloadString(uri);
 
                 /*
@@ -284,6 +247,7 @@ namespace YouTubeGrabber
                 gridBase.RefreshDataSource();
                 TimeSpan diff = DateTime.Now - t0;
                 slblCaption.Text = string.Format("{0:0} ms", diff.TotalMilliseconds);
+                PublishEvent("Analysis of html-code was completed successfully.");
             }
             else if (e.ProgressPercentage == -1)
             {
@@ -323,7 +287,13 @@ namespace YouTubeGrabber
         /// </summary>
         private void Download()
         {
-            Uri uri = new Uri(tdInputUri.Text);
+            threadPool = new FixedThreadPool(Global.Default.varXml.ThreadCount);
+            threadPool.Finished += ThreadPool_Finished;
+
+            foreach (YouTubeRecord record in records)
+                record.ProgressPercentage = 0;
+
+            Uri uri = new Uri(teAnalyseUri.Text);
 
             IEnumerable<YouTubeRecord> downloads = records.Where(item => item.Priority != Priority.None);
 
@@ -359,7 +329,7 @@ namespace YouTubeGrabber
         {
             gridBase.RefreshDataSource();
 
-            if (threadPool.TaskCount > 0)
+            if (threadPool != null && threadPool.TaskCount > 0)
             {
                 int count = threadPool.TaskCount;
                 int executed = threadPool.ExecutedCount;
@@ -372,8 +342,7 @@ namespace YouTubeGrabber
         }
 
         private void viewBase_PopupMenuShowing(object sender, PopupMenuShowingEventArgs e)
-        {
-            
+        {            
             if (e.MenuType == GridMenuType.Row)
             {
                 GridViewMenu menu = e.Menu;              
@@ -405,7 +374,22 @@ namespace YouTubeGrabber
                 tmrInterfaceUpdate_Tick(this, EventArgs.Empty);
                 btnDownload.Text = "Download";
                 Downloading = false;
+
+                PublishEvent("Finish of dowloading attempts all records.");
             }));
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Global.Default.varXml.AnalyseUri = teAnalyseUri.Text;
+            Global.Default.varXml.DownloadPath = teDownloadPath.Text;
+            Global.Default.varXml.ThreadCount = (int)seThreadCount.Value;
+            Global.Default.varXml.SaveToXML();
+        }
+
+        private void seThreadCount_EditValueChanged(object sender, EventArgs e)
+        {
+            Global.Default.varXml.ThreadCount = (int)seThreadCount.Value;
         }
     }
 }
