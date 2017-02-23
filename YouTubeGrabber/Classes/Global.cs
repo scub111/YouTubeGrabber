@@ -115,7 +115,7 @@ namespace YouTubeGrabber
         /// </summary>
         public void Init()
         {
-            Version = "v1.0.4";
+            Version = "v1.0.5";
 
             string fileName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location);
             varXml = new VarXml(string.Format("{0}.xml", fileName));

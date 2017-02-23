@@ -287,6 +287,10 @@ namespace YouTubeGrabber
         /// </summary>
         private void Download()
         {
+            string[] infos = new string[] { Global.Default.varXml.AnalyseUri };
+
+            File.WriteAllLines(Path.Combine(Global.Default.varXml.DownloadPath, "_Info.txt"), infos);
+
             threadPool = new FixedThreadPool(Global.Default.varXml.ThreadCount);
             threadPool.Finished += ThreadPool_Finished;
 
