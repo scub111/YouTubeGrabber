@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -115,7 +116,7 @@ namespace YouTubeGrabber
         /// </summary>
         public void Init()
         {
-            Version = "v1.0.5";
+            Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             string fileName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location);
             varXml = new VarXml(string.Format("{0}.xml", fileName));
