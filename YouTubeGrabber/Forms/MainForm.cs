@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Usable;
@@ -88,11 +89,11 @@ namespace YouTubeGrabber
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        private static string RemoveIllegalPathCharacters(string path)
+        private static string ReplaceIllegalPathCharacters(string path)
         {
             string regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
             var r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
-            return r.Replace(path, "");
+            return r.Replace(path, ",");
         }
 
         static void DeleteFile(string file)
@@ -136,11 +137,11 @@ namespace YouTubeGrabber
                 IEnumerable<VideoInfo> videoInfos = DownloadUrlResolver.GetDownloadUrls(link, false);
                 VideoInfo video = videoInfos.First();
 
-                string finalFile = Path.Combine(path, RemoveIllegalPathCharacters(name) + video.VideoExtension);
+                string finalFile = Path.Combine(path, ReplaceIllegalPathCharacters(name) + video.VideoExtension);
 
                 if (!File.Exists(finalFile))
                 {
-                    tempFile = Path.Combine(path, RemoveIllegalPathCharacters(name) + ".tmp");
+                    tempFile = Path.Combine(path, ReplaceIllegalPathCharacters(name) + ".tmp");
                     VideoDownloaderEx videoDownloader = new VideoDownloaderEx(video, tempFile, record);
                     videoDownloader.DownloadProgressChanged += VideoDownloader_DownloadProgressChanged;
                     videoDownloader.Execute();
@@ -179,7 +180,9 @@ namespace YouTubeGrabber
             {
                 records.Clear();
                 Uri uri = new Uri(teAnalyseUri.Text);
-                html = new WebClient().DownloadString(uri);
+                WebClient webClient = new WebClient();
+                webClient.Encoding = Encoding.UTF8;
+                html = webClient.DownloadString(uri);
 
                 /*
                 string path = @"YouTube-test.txt";
@@ -194,7 +197,7 @@ namespace YouTubeGrabber
 
                 //IHtmlCollection<IElement> list = angle.All.Where(i => i.LocalName == "li");
                 string[] strArr = new string[1];
-                int index = 0;
+                int index = 1;
                 string reference = "";
                 IHtmlCollection<IElement> list = angle.QuerySelectorAll("li.yt-uix-scroller-scroll-unit");
                 foreach (IElement element in list)
