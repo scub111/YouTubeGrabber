@@ -1,6 +1,6 @@
 ﻿using RapidInterface;
 
-namespace YouTubeGrabber
+namespace YouTubeGrabber.Forms
 {
     partial class MainForm
     {

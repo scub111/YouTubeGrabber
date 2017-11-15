@@ -1,13 +1,4 @@
-﻿using AngleSharp.Dom;
-using AngleSharp.Dom.Html;
-using AngleSharp.Parser.Html;
-using DevExpress.Utils.Menu;
-using DevExpress.XtraEditors;
-using DevExpress.XtraGrid.Menu;
-using DevExpress.XtraGrid.Views.Grid;
-using DevExpress.XtraSplashScreen;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -16,10 +7,15 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using AngleSharp.Parser.Html;
+using DevExpress.Utils.Menu;
+using DevExpress.XtraEditors;
+using DevExpress.XtraGrid.Views.Grid;
+using DevExpress.XtraSplashScreen;
 using Usable;
 using YoutubeExtractor;
 
-namespace YouTubeGrabber
+namespace YouTubeGrabber.Forms
 {
     public partial class MainForm : XtraForm
     {
@@ -27,60 +23,59 @@ namespace YouTubeGrabber
         {
             Global.Default.Init();
             InitializeComponent();
-            workerAnalyse = new BackgroundWorker();
-            workerAnalyse.WorkerReportsProgress = true;
-            workerAnalyse.DoWork += WorkerAnalyse_DoWork;
-            workerAnalyse.ProgressChanged += WorkerAnalyse_ProgressChanged;
-            html = "No data";
-            records = new Collection<YouTubeRecord>();
-            events = new Collection<EventLog>();
-            Downloading = false;
+            _workerAnalyse = new BackgroundWorker {WorkerReportsProgress = true};
+            _workerAnalyse.DoWork += WorkerAnalyse_DoWork;
+            _workerAnalyse.ProgressChanged += WorkerAnalyse_ProgressChanged;
+            _html = "No data";
+            _records = new Collection<YouTubeRecord>();
+            _events = new Collection<EventLog>();
+            _downloading = false;
         }
 
         /// <summary>
         /// Фоновый поток.
         /// </summary>
-        private BackgroundWorker workerAnalyse;
+        private readonly BackgroundWorker _workerAnalyse;
 
         /// <summary>
         /// HTML-код страницы.
         /// </summary>
-        private string html;
+        private string _html;
 
         /// <summary>
         /// Начальное время выполнения задачи.
         /// </summary>
-        private DateTime t0;
+        private DateTime _t0;
 
         /// <summary>
         /// Список записей.
         /// </summary>
-        private Collection<YouTubeRecord> records;
+        private readonly Collection<YouTubeRecord> _records;
 
         /// <summary>
         /// Список событий.
         /// </summary>
-        private Collection<EventLog> events;
+        private readonly Collection<EventLog> _events;
 
         /// <summary>
         /// Пул поток для загрузки записей.
         /// </summary>
-        private FixedThreadPool threadPool;
+        private FixedThreadPool _threadPool;
 
         /// <summary>
         /// Загружаются ли сейчас записи.
         /// </summary>
-        private bool Downloading;
+        private bool _downloading;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Text += string.Format(" {0}", Global.Default.Version);
+            Text += $" {Global.Default.Version}";
             teAnalyseUri.Text = Global.Default.varXml.AnalyseUri;
             teDownloadPath.Text = Global.Default.varXml.DownloadPath;
             seThreadCount.Value = Global.Default.varXml.ThreadCount;
             SplashScreenManager.CloseForm(false);
-            gridBase.DataSource = records;
-            gridEventLog.DataSource = events;
+            gridBase.DataSource = _records;
+            gridEventLog.DataSource = _events;
             PublishEvent("Program was started normaly.");
         }
 
@@ -91,8 +86,8 @@ namespace YouTubeGrabber
         /// <returns></returns>
         private static string ReplaceIllegalPathCharacters(string path)
         {
-            string regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
-            var r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
+            var regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
+            var r = new Regex($"[{Regex.Escape(regexSearch)}]");
             return r.Replace(path, ",");
         }
 
@@ -112,53 +107,51 @@ namespace YouTubeGrabber
 
         private void PublishEvent(string eventLog)
         {
-            events.Add(new EventLog(eventLog));
+            _events.Add(new EventLog(eventLog));
             gridEventLog.RefreshDataSource();
         }
 
         /// <summary>
         /// Загрузка записи в определенную директорию.
         /// </summary>
-        /// <param name="url">Адрес записи</param>
-        /// <param name="path">Директория сохранения</param>
         private void DownloadRecord(string link, string path, string name, YouTubeRecord record)
         {
-            string tempFile = "";
+            var tempFile = "";
             try
             {
-                this.BeginInvoke(new Action(() =>
+                BeginInvoke(new Action(() =>
                 {
-                    PublishEvent(string.Format("[{0}] - try to download...", name));
+                    PublishEvent($"[{name}] - try to download...");
                 }));
 
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
 
-                IEnumerable<VideoInfo> videoInfos = DownloadUrlResolver.GetDownloadUrls(link, false);
-                VideoInfo video = videoInfos.First();
+                var videoInfos = DownloadUrlResolver.GetDownloadUrls(link, false);
+                var video = videoInfos.First();
 
-                string finalFile = Path.Combine(path, ReplaceIllegalPathCharacters(name) + video.VideoExtension);
+                var finalFile = Path.Combine(path, ReplaceIllegalPathCharacters(name) + video.VideoExtension);
 
                 if (!File.Exists(finalFile))
                 {
                     tempFile = Path.Combine(path, ReplaceIllegalPathCharacters(name) + ".tmp");
-                    VideoDownloaderEx videoDownloader = new VideoDownloaderEx(video, tempFile, record);
+                    var videoDownloader = new VideoDownloaderEx(video, tempFile, record);
                     videoDownloader.DownloadProgressChanged += VideoDownloader_DownloadProgressChanged;
                     videoDownloader.Execute();
                     RenameFile(tempFile, finalFile);
                 }
                 record.ProgressPercentage = 100;
 
-                this.BeginInvoke(new Action(() =>
+                BeginInvoke(new Action(() =>
                 {
-                    PublishEvent(string.Format("[{0}] - was downloaded successfully", name));
+                    PublishEvent($"[{name}] - was downloaded successfully");
                 }));
             }
             catch(Exception ex)
             {
-                this.BeginInvoke(new Action(() =>
+                BeginInvoke(new Action(() =>
                 {
-                    PublishEvent(string.Format("{0} - {1}", ex.Source, ex.Message));
+                    PublishEvent($"{ex.Source} - {ex.Message}");
                 }));
 
                 if (!string.IsNullOrEmpty(tempFile))
@@ -168,67 +161,57 @@ namespace YouTubeGrabber
 
         private void VideoDownloader_DownloadProgressChanged(object sender, ProgressEventArgs e)
         {
-            VideoDownloaderEx videoEx = sender as VideoDownloaderEx;
-            if (videoEx != null)
+            if (sender is VideoDownloaderEx videoEx)
                 ((YouTubeRecord)videoEx.Tag).ProgressPercentage = e.ProgressPercentage;
         }
 
         private void WorkerAnalyse_DoWork(object sender, DoWorkEventArgs e)
         {
-            workerAnalyse.ReportProgress(0);
+            _workerAnalyse.ReportProgress(0);
             try
             {
-                records.Clear();
-                Uri uri = new Uri(teAnalyseUri.Text);
-                WebClient webClient = new WebClient();
-                webClient.Encoding = Encoding.UTF8;
-                html = webClient.DownloadString(uri);
+                _records.Clear();
+                var uri = new Uri(teAnalyseUri.Text);
+                var webClient = new WebClient {Encoding = Encoding.UTF8};
+                _html = webClient.DownloadString(uri);
+                _workerAnalyse.ReportProgress(1);
 
-                /*
-                string path = @"YouTube-test.txt";
-
-                if (File.Exists(path))
-                    html = File.ReadAllText(path);
-                */
-                workerAnalyse.ReportProgress(1);
-
-                HtmlParser parser = new HtmlParser();
-                IHtmlDocument angle = parser.Parse(html);
+                var parser = new HtmlParser();
+                var angle = parser.Parse(_html);
 
                 //IHtmlCollection<IElement> list = angle.All.Where(i => i.LocalName == "li");
-                string[] strArr = new string[1];
-                int index = 1;
-                string reference = "";
-                IHtmlCollection<IElement> list = angle.QuerySelectorAll("li.yt-uix-scroller-scroll-unit");
-                foreach (IElement element in list)
+                var strArr = new string[1];
+                var index = 1;
+                var reference = "";
+                var list = angle.QuerySelectorAll("li.yt-uix-scroller-scroll-unit");
+                foreach (var element in list)
                 {
-                    IHtmlCollection<IElement> indexes = element.QuerySelectorAll("span.index");
-                    if (indexes.Count() > 0)
+                    var indexes = element.QuerySelectorAll("span.index");
+                    if (indexes != null && indexes.Any())
                         strArr = indexes[0].TextContent.Split('\n');
 
-                    int result = 1;
-                    if (strArr.Length == 3 && int.TryParse(strArr[1], out result))
+                    if (strArr.Length == 3 && int.TryParse(strArr[1], out var result))
                         index = result;
 
-                    IHtmlCollection<IElement> references = element.QuerySelectorAll("a");
-                    if (references.Count() > 0)
+                    var references = element.QuerySelectorAll("a");
+                    if (references != null && references.Any())
                         reference = references[0].GetAttribute("href");
 
-                    YouTubeRecord record = new YouTubeRecord()
+                    var record = new YouTubeRecord()
                     {
                         Index = index,
                         Title = element.GetAttribute("data-video-title"),
                         Reference = reference
                     };
-                    records.Add(record);
+                    _records.Add(record);
                 }
 
-                workerAnalyse.ReportProgress(2);
+                _workerAnalyse.ReportProgress(2);
             }
             catch (Exception ex)
             {
-                html = string.Format("{0} - {1}", ex.Source, ex.Message);
-                workerAnalyse.ReportProgress(-1);
+                _html = $"{ex.Source} - {ex.Message}";
+                _workerAnalyse.ReportProgress(-1);
             }
         }
 
@@ -241,46 +224,46 @@ namespace YouTubeGrabber
             }
             else if (e.ProgressPercentage == 1)
             {
-                memoEdit1.Text = html;
+                memoEdit1.Text = _html;
                 sprbProgress.Value = 80;
             }
             else if (e.ProgressPercentage == 2)
             {
                 sprbProgress.Value = 100;
                 gridBase.RefreshDataSource();
-                TimeSpan diff = DateTime.Now - t0;
-                slblCaption.Text = string.Format("{0:0} ms", diff.TotalMilliseconds);
+                var diff = DateTime.Now - _t0;
+                slblCaption.Text = $"{diff.TotalMilliseconds:0} ms";
                 PublishEvent("Analysis of html-code was completed successfully.");
             }
             else if (e.ProgressPercentage == -1)
             {
-                memoEdit1.Text = html;
-                TimeSpan diff = DateTime.Now - t0;
-                slblCaption.Text = string.Format("{0:0} ms", diff.TotalMilliseconds);
+                memoEdit1.Text = _html;
+                var diff = DateTime.Now - _t0;
+                slblCaption.Text = $"{diff.TotalMilliseconds:0} ms";
             }
         }
 
         private void btnAnalyse_Click(object sender, EventArgs e)
         {
-            if (!workerAnalyse.IsBusy)
+            if (!_workerAnalyse.IsBusy)
             {
-                t0 = DateTime.Now;
-                workerAnalyse.RunWorkerAsync();
+                _t0 = DateTime.Now;
+                _workerAnalyse.RunWorkerAsync();
             }
         }
 
         private void btnDownload_Click(object sender, EventArgs e)
         {
-            Downloading = !Downloading;
+            _downloading = !_downloading;
 
-            if (Downloading)
+            if (_downloading)
             {
                 Download();
                 btnDownload.Text = "Stop";
             }
             else
             {
-                threadPool.Stop();
+                _threadPool.Stop();
                 btnDownload.Text = "Download";
             }
         }
@@ -290,46 +273,46 @@ namespace YouTubeGrabber
         /// </summary>
         private void Download()
         {
-            string[] infos = new string[] { teAnalyseUri.Text };
+            var infos = new[] { teAnalyseUri.Text };
 
             if (!Directory.Exists(teDownloadPath.Text))
                 Directory.CreateDirectory(teDownloadPath.Text);
 
             File.WriteAllLines(Path.Combine(teDownloadPath.Text, "_Info.txt"), infos);
 
-            threadPool = new FixedThreadPool(Global.Default.varXml.ThreadCount);
-            threadPool.Finished += ThreadPool_Finished;
+            _threadPool = new FixedThreadPool(Global.Default.varXml.ThreadCount);
+            _threadPool.Finished += ThreadPool_Finished;
 
-            foreach (YouTubeRecord record in records)
+            foreach (var record in _records)
                 record.ProgressPercentage = 0;
 
-            Uri uri = new Uri(teAnalyseUri.Text);
+            var uri = new Uri(teAnalyseUri.Text);
 
-            IEnumerable<YouTubeRecord> downloads = records.Where(item => item.Priority != Priority.None);
+            var downloads = _records.Where(item => item.Priority != Priority.None);
 
-            int log = (int)Math.Log10(records.Count()) + 1;
-            string format = string.Format("D{0}", log);
+            var log = (int)Math.Log10(_records.Count) + 1;
+            var format = $"D{log}";
 
-            foreach (YouTubeRecord record in downloads)
+            foreach (var record in downloads)
             {
-                Action act = new Action(() =>
-                DownloadRecord(string.Format("{0}{1}", uri.Authority, record.Reference),
+                var act = new Action(() =>
+                DownloadRecord($"{uri.Authority}{record.Reference}",
                 teDownloadPath.Text,
-                string.Format("{0}. {1}", record.Index.ToString(format), record.Title),
+                    $"{record.Index.ToString(format)}. {record.Title}",
                 record));
 
                 switch (record.Priority)
                 {
                     case Priority.High:
-                        threadPool.Execute(act, TaskPriorityEx.HIGH);
+                        _threadPool.Execute(act, TaskPriorityEx.HIGH);
                         break;
 
                     case Priority.Normal:
-                        threadPool.Execute(act, TaskPriorityEx.NORMAL);
+                        _threadPool.Execute(act, TaskPriorityEx.NORMAL);
                         break;
 
                     case Priority.Low:
-                        threadPool.Execute(act, TaskPriorityEx.LOW);
+                        _threadPool.Execute(act);
                         break;
                 }
             }
@@ -339,15 +322,15 @@ namespace YouTubeGrabber
         {
             gridBase.RefreshDataSource();
 
-            if (threadPool != null && threadPool.TaskCount > 0)
+            if (_threadPool != null && _threadPool.TaskCount > 0)
             {
-                int count = threadPool.TaskCount;
-                int executed = threadPool.ExecutedCount;
+                var count = _threadPool.TaskCount;
+                var executed = _threadPool.ExecutedCount;
                 double per = 0;
                 if (count > 0)
                     per = executed / (double)count * 100;
                 sprbProgress.Value = (int)per;
-                slblCaption.Text = string.Format("{0} / {1}", executed, count);
+                slblCaption.Text = $"{executed} / {count}";
             }
         }
 
@@ -355,23 +338,22 @@ namespace YouTubeGrabber
         {            
             if (e.MenuType == GridMenuType.Row)
             {
-                GridViewMenu menu = e.Menu;              
+                var menu = e.Menu;              
 
                 //Adding new items 
-                menu.Items.Add(new DXMenuCheckItem("High", false, null, new EventHandler((obj, arg) => ChangePriority(Priority.High))));
-                menu.Items.Add(new DXMenuCheckItem("Normal", false, null, new EventHandler((obj, arg) => ChangePriority(Priority.Normal))));
-                menu.Items.Add(new DXMenuCheckItem("Low", false, null, new EventHandler((obj, arg) => ChangePriority(Priority.Low))));
-                menu.Items.Add(new DXMenuCheckItem("None", false, null, new EventHandler((obj, arg) => ChangePriority(Priority.None))));
+                menu.Items.Add(new DXMenuCheckItem("High", false, null, (obj, arg) => ChangePriority(Priority.High)));
+                menu.Items.Add(new DXMenuCheckItem("Normal", false, null, (obj, arg) => ChangePriority(Priority.Normal)));
+                menu.Items.Add(new DXMenuCheckItem("Low", false, null, (obj, arg) => ChangePriority(Priority.Low)));
+                menu.Items.Add(new DXMenuCheckItem("None", false, null, (obj, arg) => ChangePriority(Priority.None)));
             }
         }
 
         private void ChangePriority(Priority priority)
         {
-            for (int i = 0; i < viewBase.SelectedRowsCount; i++)
+            for (var i = 0; i < viewBase.SelectedRowsCount; i++)
             {
-                int row = (viewBase.GetSelectedRows()[i]);
-                YouTubeRecord obj = viewBase.GetRow(row) as YouTubeRecord;
-                if (obj != null)
+                var row = (viewBase.GetSelectedRows()[i]);
+                if (viewBase.GetRow(row) is YouTubeRecord obj)
                     obj.Priority = priority;
             }
             gridBase.RefreshDataSource();
@@ -379,11 +361,11 @@ namespace YouTubeGrabber
 
         private void ThreadPool_Finished(object sender, EventArgs e)
         {
-            this.BeginInvoke(new Action(() =>
+            BeginInvoke(new Action(() =>
             {
                 tmrInterfaceUpdate_Tick(this, EventArgs.Empty);
                 btnDownload.Text = "Download";
-                Downloading = false;
+                _downloading = false;
 
                 PublishEvent("Finish of dowloading attempts all records.");
             }));
