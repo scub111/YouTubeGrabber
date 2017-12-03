@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VarXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <AnalyseUri>https://www.youtube.com/watch?v=Cp2jvwiqBJo&amp;list=PLw7bd_COloYmYucVkBD6HFD1u6aO4M_R6&amp;index=5</AnalyseUri>
-  <DownloadPath>D:\Training\IT\Hardware\Почемучка. Информатика (RUS)</DownloadPath>
+  <AnalyseUri>https://www.youtube.com/watch?v=QqyWAB_l0ms&amp;list=PLWQcnlIwfVfF4mVvb2RPqfB6RjXYEn6ys</AnalyseUri>
+  <DownloadPath>D:\Training\English\Video\Айше Борсеитова (RUS)</DownloadPath>
   <ThreadCount>4</ThreadCount>
 </VarXml>

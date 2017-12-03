@@ -60,3 +60,6 @@ D:\_Cloud\_Projects\Scub111\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabb
 D:\_Cloud\_Projects\Scub111\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.csproj.CoreCompileInputs.cache
 D:\_Cloud\_Projects\Scub111\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.exe
 D:\_Cloud\_Projects\Scub111\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.pdb
+D:\_Cloud\_Projects\Scub111\YouTubeGrabber\YouTubeGrabber\obj\Debug\YouTubeGrabber.exe.licenses
+D:\_Cloud\_Projects\Scub111\YouTubeGrabber\YouTubeGrabber\bin\Debug\Newtonsoft.Json.dll
+D:\_Cloud\_Projects\Scub111\YouTubeGrabber\YouTubeGrabber\bin\Debug\Newtonsoft.Json.xml

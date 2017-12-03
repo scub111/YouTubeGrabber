@@ -117,6 +117,7 @@ namespace YouTubeGrabber.Forms
         private void DownloadRecord(string link, string path, string name, YouTubeRecord record)
         {
             var tempFile = "";
+            name = name.Replace('/', '-');
             try
             {
                 BeginInvoke(new Action(() =>
