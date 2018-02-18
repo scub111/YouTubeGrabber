@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <VarXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <AnalyseUri>https://www.youtube.com/watch?v=QqyWAB_l0ms&amp;list=PLWQcnlIwfVfF4mVvb2RPqfB6RjXYEn6ys</AnalyseUri>
-  <DownloadPath>D:\Training\English\Video\Айше Борсеитова (RUS)</DownloadPath>
+  <AnalyseUri>https://www.youtube.com/watch?v=xLlKbxmZ1n4&amp;list=PL874KddjzYd8uFBKRgWydGgsLkRIAstNS</AnalyseUri>
+  <DownloadPath>D:\Training\IT\Theory\Основы работы в Windows 10</DownloadPath>
   <ThreadCount>4</ThreadCount>
 </VarXml>

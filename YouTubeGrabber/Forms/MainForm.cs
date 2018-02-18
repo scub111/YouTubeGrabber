@@ -221,7 +221,7 @@ namespace YouTubeGrabber.Forms
             if (e.ProgressPercentage == 0)
             {
                 sprbProgress.Value = 10;
-                slblCaption.Text = "Analysing...";
+                slblCaption.Text = @"Analysing...";
             }
             else if (e.ProgressPercentage == 1)
             {
@@ -233,14 +233,14 @@ namespace YouTubeGrabber.Forms
                 sprbProgress.Value = 100;
                 gridBase.RefreshDataSource();
                 var diff = DateTime.Now - _t0;
-                slblCaption.Text = $"{diff.TotalMilliseconds:0} ms";
+                slblCaption.Text = $@"{diff.TotalMilliseconds:0} ms";
                 PublishEvent("Analysis of html-code was completed successfully.");
             }
             else if (e.ProgressPercentage == -1)
             {
                 memoEdit1.Text = _html;
                 var diff = DateTime.Now - _t0;
-                slblCaption.Text = $"{diff.TotalMilliseconds:0} ms";
+                slblCaption.Text = $@"{diff.TotalMilliseconds:0} ms";
             }
         }
 
